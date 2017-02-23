@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,20 +8,26 @@ namespace HashCode
     {
         static void Main(string[] args)
         {
-            Run(@"file\kittens.in", @"file\kittens.out");
-            Run(@"file\me_at_the_zoo.in", @"file\me_at_the_zoo.out");
-            Run(@"file\trending_today.in", @"file\trending_today.out");
-            Run(@"file\videos_worth_spreading.in", @"file\videos_worth_spreading.out");
+            //Run(@"files\test.in", @"files\test.out");
+            Run(@"files\kittens.in", @"files\kittens.out");
+            Run(@"files\me_at_the_zoo.in", @"files\me_at_the_zoo.out");
+            Run(@"files\trending_today.in", @"files\trending_today.out");
+            Run(@"files\videos_worth_spreading.in", @"files\videos_worth_spreading.out");
         }
 
         static void Run(string inputFileName, string outputFileName)
         {
-            int tailleMax = 100;
+
             List<Video> videos = new List<Video>();
 
             List<Request> requests = new List<Request>();
             List<CacheServer> cacheServers = new List<CacheServer>();
+            List<Endpoint> endpoints = new List<Endpoint>();
             var dataCenter = new DataCenter();
+
+            FileReaderHelper.ReadFile(inputFileName, videos, requests, endpoints, cacheServers, dataCenter);
+
+            int tailleMax = cacheServers.First().Size;
 
             foreach (var req in requests.GroupBy(c => c.IdVideo).OrderByDescending(c => c.Sum(x => x.NbRequests)))
             {
@@ -58,7 +63,7 @@ namespace HashCode
                 fileOut.Close();
             }
 
-            
+
         }
     }
 }

@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="CacheServer.cs" />
     <Compile Include="DataCenter.cs" />
+    <Compile Include="FileReaderHelper.cs" />
     <Compile Include="Video.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="Endpoint.cs" />
@@ -63,6 +64,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="files\videos_worth_spreading.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="files\test.in">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
