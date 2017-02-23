@@ -8,6 +8,7 @@ namespace HashCode
         {
             Console.WriteLine("Wazaaaa");
             Console.WriteLine("YOLO");
+            Console.WriteLine("COUCOU");
             Console.Read();
         }
     }
