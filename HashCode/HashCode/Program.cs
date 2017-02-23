@@ -52,7 +52,7 @@ namespace HashCode
                     server.Videos.Add(video);
                 }
 
-                if (finish) break;
+                //if (finish) break;
             }
 
             Console.WriteLine("Ecriture du fichier : " + outputFileName);
