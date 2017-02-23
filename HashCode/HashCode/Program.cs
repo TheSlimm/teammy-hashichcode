@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HashCode
 {
@@ -14,6 +15,12 @@ namespace HashCode
 
         static void Run(string inputFileName, string outputFileName)
         {
+            List<Video> videos = new List<Video>();
+
+            List<Request> requests = new List<Request>();
+            List<CacheServer> cacheServers = new List<CacheServer>();
+            var dataCenter = new DataCenter();
+
 
         }
     }
