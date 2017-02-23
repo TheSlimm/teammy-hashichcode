@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -17,7 +18,7 @@ namespace HashCode
 
         static void Run(string inputFileName, string outputFileName)
         {
-
+            Console.WriteLine("Début du fichier : " + inputFileName);
             List<Video> videos = new List<Video>();
 
             List<Request> requests = new List<Request>();
@@ -29,21 +30,32 @@ namespace HashCode
 
             int tailleMax = cacheServers.First().Size;
 
-            foreach (var req in requests.GroupBy(c => c.IdVideo).OrderByDescending(c => c.Sum(x => x.NbRequests)))
+            var counter = 0;
+
+            var r = requests.GroupBy(c => c.IdVideo).OrderByDescending(c => c.Sum(x => x.NbRequests));
+
+            bool finish = false;
+            foreach (var req in r)
             {
+
                 var idVideo = req.Key;
+                Console.WriteLine("Compteur de vidéos : {0}/{1} ", ++counter, r.Count());
                 foreach (var server in cacheServers)
                 {
                     var video = videos.Find(x => x.Id == idVideo);
                     if (server.Videos.Sum(c => c.Size) + video.Size > tailleMax)
                     {
+                        finish = true;
                         continue;
                     }
 
                     server.Videos.Add(video);
                 }
+
+                if (finish) break;
             }
 
+            Console.WriteLine("Ecriture du fichier : " + outputFileName);
             using (var fileOut = new StreamWriter(outputFileName))
             {
                 fileOut.WriteLine(cacheServers.Count);
