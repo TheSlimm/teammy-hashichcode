@@ -10,7 +10,7 @@ namespace HashCode
         static void Main(string[] args)
         {
             //Run(@"files\test.in", @"files\test.out");
-            //Run(@"files\kittens.in", @"files\kittens.out");
+            Run(@"files\kittens.in", @"files\kittens.out");
             Run(@"files\me_at_the_zoo.in", @"files\me_at_the_zoo.out");
             Run(@"files\trending_today.in", @"files\trending_today.out");
             Run(@"files\videos_worth_spreading.in", @"files\videos_worth_spreading.out");
@@ -69,10 +69,27 @@ namespace HashCode
 
             foreach (var request in requests)
             {
-                request.Score = request.NbRequests/videos.Find(v => v.Id == request.IdVideo).Size;
+                //request.Score = request.NbRequests/videos.Find(v => v.Id == request.IdVideo).Size;
+                var videoSize = videos.Find(v => v.Id == request.IdVideo).Size;
+                foreach (var cacheServer in cacheServers.Where(x => videoSize <= x.SizeRemaining))
+                {
+
+                    var endpointLocal = endpoints.Find(p => p.Id == request.IdEndpoint);
+                    if (!endpointLocal.IdCacheServerLatency.ContainsKey(cacheServer.Id))
+                        continue;
+                    var latenceCacheServer =
+                       endpointLocal.IdCacheServerLatency[cacheServer.Id];
+
+                    var calcul = ((endpointLocal.LatencyDataCenter - latenceCacheServer) * request.NbRequests) / videos.Find(v => v.Id == request.IdVideo).Size;
+
+                    if (request.Score < calcul)
+                        request.Score = calcul;
+
+                }
+
             }
 
-            foreach (var request in requests.OrderBy( re => re.Score))
+            foreach (var request in requests.OrderByDescending( re => re.Score))
             {
                 var maxScoring = 0;
                 var idCacheServer = -1;
