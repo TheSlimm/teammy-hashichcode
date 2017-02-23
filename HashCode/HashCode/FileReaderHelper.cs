@@ -24,7 +24,7 @@ namespace HashCode
             // Création des caches
             for (var cacheIndex = 0; cacheIndex < nbCache; cacheIndex++)
             {
-                cacheServers.Add(new CacheServer() { Id = cacheIndex, Size = cacheSize, Videos = new List<Video>() });
+                cacheServers.Add(new CacheServer() { Id = cacheIndex, Size = cacheSize,SizeRemaining = cacheSize, Videos = new List<Video>() });
             }
 
             // Second line

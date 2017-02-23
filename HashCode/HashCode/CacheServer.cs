@@ -11,6 +11,6 @@ namespace HashCode
         public int Id { get; set; }
         public int Size { get; set; }
         public List<Video> Videos { get; set; }
-
+        public int SizeRemaining { get; set; }
     }
 }
