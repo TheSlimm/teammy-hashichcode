@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace HashCode
 {
@@ -15,13 +17,48 @@ namespace HashCode
 
         static void Run(string inputFileName, string outputFileName)
         {
+            int tailleMax = 100;
             List<Video> videos = new List<Video>();
 
             List<Request> requests = new List<Request>();
             List<CacheServer> cacheServers = new List<CacheServer>();
             var dataCenter = new DataCenter();
 
+            foreach (var req in requests.GroupBy(c => c.IdVideo).OrderByDescending(c => c.Sum(x => x.NbRequests)))
+            {
+                var idVideo = req.Key;
+                foreach (var server in cacheServers)
+                {
+                    var video = videos.Find(x => x.Id == idVideo);
+                    if (server.Videos.Sum(c => c.Size) + video.Size > tailleMax)
+                    {
+                        continue;
+                    }
 
+                    server.Videos.Add(video);
+                }
+            }
+
+            using (var fileOut = new StreamWriter(outputFileName))
+            {
+                fileOut.WriteLine(cacheServers.Count);
+
+                foreach (var server in cacheServers)
+                {
+                    fileOut.Write(server.Id);
+
+                    foreach (var video in server.Videos)
+                    {
+                        fileOut.Write(" " + video.Id);
+                    }
+
+                    fileOut.WriteLine();
+                }
+
+                fileOut.Close();
+            }
+
+            
         }
     }
 }
