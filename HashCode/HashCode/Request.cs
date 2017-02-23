@@ -8,5 +8,8 @@ namespace HashCode
 {
     public class Request
     {
+        public int NbRequests { get; set; }
+        public int IdEndpoint { get; set; }
+        public int IdVideo { get; set; }
     }
 }
