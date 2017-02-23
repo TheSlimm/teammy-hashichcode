@@ -6,8 +6,8 @@ namespace HashCode
     public class FileReaderHelper
     {
         public static void ReadFile(string filePath,
-            List<Video> videos, List<Request> requests, List<Endpoint> endpoints,
-            List<CacheServer> cacheServers, DataCenter dataCenter)
+            Dictionary<int, Video> videos, Dictionary<int, Request> requests, Dictionary<int, Endpoint> endpoints,
+            Dictionary<int, CacheServer> cacheServers, DataCenter dataCenter)
         {
             var lines = File.ReadAllLines(filePath);
 
@@ -24,7 +24,7 @@ namespace HashCode
             // Création des caches
             for (var cacheIndex = 0; cacheIndex < nbCache; cacheIndex++)
             {
-                cacheServers.Add(new CacheServer() { Id = cacheIndex, Size = cacheSize,SizeRemaining = cacheSize, Videos = new List<Video>() });
+                cacheServers.Add(cacheIndex, new CacheServer() { Id = cacheIndex, Size = cacheSize,SizeRemaining = cacheSize, Videos = new List<Video>() });
             }
 
             // Second line
@@ -33,7 +33,7 @@ namespace HashCode
 
             for (var idVideo = 0; idVideo < nbVideo; idVideo++)
             {
-                videos.Add(new Video { Id = idVideo, Size = int.Parse(dataRead[idVideo]) });
+                videos.Add(idVideo, new Video { Id = idVideo, Size = int.Parse(dataRead[idVideo]) });
             }
 
             // Endpoints lines
@@ -56,16 +56,17 @@ namespace HashCode
                     newEndpoint.IdCacheServerLatency.Add(int.Parse(dataRead[0]), int.Parse(dataRead[1]));
                 }
 
-                endpoints.Add(newEndpoint);
+                endpoints.Add(idEndpoint, newEndpoint);
             }
 
+            var x = 0;
             // Requests lines
             for (var indexRequest = 0; indexRequest < nbRequests; indexRequest++)
             {
                 lineIndex++;
                 dataRead = lines[lineIndex].Split(' ');
 
-                requests.Add(new Request()
+                requests.Add(x++, new Request()
                 {
                     IdVideo  = int.Parse(dataRead[0]),
                     IdEndpoint = int.Parse(dataRead[1]),
