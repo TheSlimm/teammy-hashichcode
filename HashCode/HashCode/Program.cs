@@ -20,76 +20,68 @@ namespace HashCode
         {
             Console.WriteLine("Début du fichier : " + inputFileName);
 
-            var videos = new Dictionary<int, Video>();
-            var requests = new Dictionary<int, Request>();
-            var cacheServers = new Dictionary<int, CacheServer>();
-            var endpoints = new Dictionary<int, Endpoint>();
+            Dictionary<int, Video> videos = new Dictionary<int, Video>();
+            Dictionary<int, Request> requests = new Dictionary<int, Request>();
+            Dictionary<int, CacheServer> cacheServers = new Dictionary<int, CacheServer>();
+            Dictionary<int, Endpoint> endpoints = new Dictionary<int, Endpoint>();
 
-            var dataCenter = new DataCenter();
-
-            FileReaderHelper.ReadFile(inputFileName, videos, requests, endpoints, cacheServers, dataCenter);
+            FileReaderHelper.ReadFile(inputFileName, videos, requests, endpoints, cacheServers);
 
             int i = 0;
-            foreach (var requestK in requests)
+            foreach (KeyValuePair<int, Request> requestK in requests)
             {
-                var request = requestK.Value;
+                Request request = requestK.Value;
                 i++;
 
                 if (i % 100 == 0)
                     Console.WriteLine("{0}%", i * 100 / requests.Count);
 
-                foreach (var cacheServerK in cacheServers)
+                foreach (KeyValuePair<int, CacheServer> cacheServerK in cacheServers)
                 {
-                    var cacheServer = cacheServerK.Value;
-                    var endpointLocal = endpoints[request.IdEndpoint];
+                    CacheServer cacheServer = cacheServerK.Value;
+                    Endpoint endpointLocal = endpoints[request.IdEndpoint];
 
                     if (!endpointLocal.IdCacheServerLatency.ContainsKey(cacheServer.Id))
                         continue;
 
-                    var latenceCacheServer =
-                       endpointLocal.IdCacheServerLatency[cacheServer.Id];
-
-                    var calcul = ((endpointLocal.LatencyDataCenter - latenceCacheServer) * request.NbRequests) / videos[request.IdVideo].Size;
+                    int latenceCacheServer = endpointLocal.IdCacheServerLatency[cacheServer.Id];
+                    int calcul = ((endpointLocal.LatencyDataCenter - latenceCacheServer) * request.NbRequests) / videos[request.IdVideo].Size;
 
                     if (request.Score < calcul)
                         request.Score = calcul;
                 }
             }
 
-            foreach (var requestK in requests.OrderByDescending(re => re.Value.Score))
+            foreach (KeyValuePair<int, Request> requestK in requests.OrderByDescending(re => re.Value.Score))
             {
-                var request = requestK.Value;
-
-                var maxScoring = 0;
-                var idCacheServer = -1;
+                Request request = requestK.Value;
+                int maxScoring = 0;
+                int idCacheServer = -1;
                 //todo : check over cache
-                var videoSize = videos[request.IdVideo].Size;
+                int videoSize = videos[request.IdVideo].Size;
 
-                foreach (var cacheServerK in cacheServers.Where(x => videoSize <= x.Value.SizeRemaining))
+                foreach (KeyValuePair<int, CacheServer> cacheServerK in cacheServers.Where(x => videoSize <= x.Value.SizeRemaining))
                 {
-                    var cacheServer = cacheServerK.Value;
-
-                    var endpointLocal = endpoints[request.IdEndpoint];
+                    CacheServer cacheServer = cacheServerK.Value;
+                    Endpoint endpointLocal = endpoints[request.IdEndpoint];
 
                     if (!endpointLocal.IdCacheServerLatency.ContainsKey(cacheServer.Id))
                         continue;
 
-                    var latenceCacheServer =
-                       endpointLocal.IdCacheServerLatency[cacheServer.Id];
-
-                    var score = (endpointLocal.LatencyDataCenter - latenceCacheServer) * request.NbRequests;
+                    int latenceCacheServer = endpointLocal.IdCacheServerLatency[cacheServer.Id];
+                    int score = (endpointLocal.LatencyDataCenter - latenceCacheServer) * request.NbRequests;
 
                     if (maxScoring < score)
                     {
                         maxScoring = score;
                         idCacheServer = cacheServer.Id;
                     }
-
                 }
+
                 if (idCacheServer > -1)
                 {
-                    var cache = cacheServers[idCacheServer];
-                    var video = videos[request.IdVideo];
+                    CacheServer cache = cacheServers[idCacheServer];
+                    Video video = videos[request.IdVideo];
 
                     if (cache.Videos.Find(v => v.Id == request.IdVideo) == null)
                     {
@@ -100,15 +92,15 @@ namespace HashCode
             }
 
             Console.WriteLine("Ecriture du fichier : " + outputFileName);
-            using (var fileOut = new StreamWriter(outputFileName))
+            using (StreamWriter fileOut = new StreamWriter(outputFileName))
             {
                 fileOut.WriteLine(cacheServers.Count);
 
-                foreach (var server in cacheServers)
+                foreach (KeyValuePair<int, CacheServer> server in cacheServers)
                 {
                     fileOut.Write(server.Value.Id);
 
-                    foreach (var video in server.Value.Videos)
+                    foreach (Video video in server.Value.Videos)
                     {
                         fileOut.Write(" " + video.Id);
                     }
@@ -118,8 +110,6 @@ namespace HashCode
 
                 fileOut.Close();
             }
-
-
         }
     }
 }
